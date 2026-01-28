@@ -35,4 +35,7 @@
 </tr>
 @endforeach
 </table>
+<br><br>
+<a href="{{ route('groups.balances', $group->id) }}">Izračun dugova</a>
+
 @endsection

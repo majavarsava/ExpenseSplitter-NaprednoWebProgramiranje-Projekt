@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\GroupController;
 use App\Http\Controllers\MemberController;
 use App\Http\Controllers\ExpenseController;
+use App\Http\Controllers\BalanceController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -25,6 +26,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/groups/{group}/members/{user}', [MemberController::class, 'destroy'])->name('groups.members.destroy');
 
     Route::resource('groups.expenses', ExpenseController::class);
+    Route::get('/groups/{group}/balances', [BalanceController::class, 'show'])->name('groups.balances');
 });
 
 require __DIR__.'/auth.php';
