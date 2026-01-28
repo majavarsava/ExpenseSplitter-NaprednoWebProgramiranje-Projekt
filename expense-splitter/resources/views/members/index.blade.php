@@ -1,6 +1,9 @@
 @extends('layouts.app')
 
 @section('content')
+<a href="{{ route('groups.index') }}">← Natrag na grupe</a>
+<br><br>
+
 <h2>Članovi grupe: {{ $group->name }}</h2>
 
 <h3>Dodaj člana</h3>
@@ -30,6 +33,5 @@
     </li>
 @endforeach
 </ul>
-<a href="{{ route('groups.index') }}"><button>Povratak na grupe</button></a>
 
 @endsection

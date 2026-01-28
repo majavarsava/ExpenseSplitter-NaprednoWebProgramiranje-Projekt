@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\GroupController;
 use App\Http\Controllers\MemberController;
+use App\Http\Controllers\ExpenseController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -22,6 +23,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/groups/{group}/members', [MemberController::class, 'index'])->name('groups.members');
     Route::post('/groups/{group}/members', [MemberController::class, 'store'])->name('groups.members.store');
     Route::delete('/groups/{group}/members/{user}', [MemberController::class, 'destroy'])->name('groups.members.destroy');
+
+    Route::resource('groups.expenses', ExpenseController::class);
 });
 
 require __DIR__.'/auth.php';

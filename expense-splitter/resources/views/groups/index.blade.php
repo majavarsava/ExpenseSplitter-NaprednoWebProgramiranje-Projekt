@@ -11,6 +11,7 @@
         {{ $group->name }}
         <a href="{{ route('groups.edit', $group->id) }}">Uredi</a>
         <a href="{{ route('groups.members', $group->id) }}">Članovi</a>
+        <a href="{{ route('groups.expenses.index', $group->id) }}">Troškovi</a>
 
         <form action="{{ route('groups.destroy', $group->id) }}" method="POST" style="display:inline;">
             @csrf
