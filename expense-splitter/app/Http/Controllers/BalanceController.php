@@ -28,13 +28,6 @@ class BalanceController extends Controller
             return view('balances.show', compact('group', 'total'));
         }
 
-        /*
-        |--------------------------------------------------------------------------
-        | BALANCES
-        |--------------------------------------------------------------------------
-        | + iznos => korisnik treba DOBITI
-        | - iznos => korisnik DUGUJE
-        */
         $balances = [];
 
         // inicijalno svi 0
@@ -42,12 +35,6 @@ class BalanceController extends Controller
             $balances[$user->id] = 0;
         }
 
-        /*
-        |--------------------------------------------------------------------------
-        | 1️⃣ EXPENSES
-        |--------------------------------------------------------------------------
-        | svaki trošak se dijeli na sve članove
-        */
         foreach ($expenses as $expense) {
             $share = $expense->amount / $count;
 
@@ -60,12 +47,7 @@ class BalanceController extends Controller
             $balances[$expense->user_id] += $expense->amount;
         }
 
-        /*
-        |--------------------------------------------------------------------------
-        | 2️⃣ SETTLEMENTS
-        |--------------------------------------------------------------------------
-        | uplate zatvaraju dugove
-        */
+
         foreach ($settlementsDb as $s) {
             // platio → manje duguje / više treba dobiti
             $balances[$s->from_user_id] += $s->amount;

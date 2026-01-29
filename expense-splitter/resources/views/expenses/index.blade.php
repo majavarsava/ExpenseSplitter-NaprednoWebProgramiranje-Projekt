@@ -40,7 +40,7 @@
                 <tr class="border-t border-white/40 hover:bg-white/40 transition">
                     <td class="p-3 text-gray-700">{{ $expense->title }}</td>
                     <td class="p-3 font-semibold text-gray-800">{{ $expense->amount }} €</td>
-                    <td class="p-3 text-gray-700">{{ $expense->date }}</td>
+                    <td class="p-3 text-gray-700">{{ \Carbon\Carbon::parse($expense->date)->format('d.m.Y') }}</td>
                     <td class="p-3 text-gray-700">{{ $expense->user->name }}</td>
 
                     <td class="p-3 space-x-2">

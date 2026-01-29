@@ -38,7 +38,7 @@
             <tbody>
             @foreach($balances as $user => $balance)
                 <tr class="border-t border-white/40">
-                    <td class="p-3 text-gray-700">{{ $user }}</td>
+                    <td class="p-3 text-gray-700">{{ $users->find($user)->name }}</td>
                     <td class="p-3">
 
                         @if($balance > 0)
