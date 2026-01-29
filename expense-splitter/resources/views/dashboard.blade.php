@@ -13,7 +13,7 @@
         <!-- Welcome -->
         <div class="bg-white shadow rounded-lg p-6 mb-8">
             <h2 class="text-2xl font-bold text-gray-800 mb-2">
-                Dobrodošla, {{ Auth::user()->name }} 👋
+                Dobrodošao/la, {{ Auth::user()->name }} 👋
             </h2>
             <p class="text-gray-600">
                 Ovdje možeš upravljati grupama, troškovima i dugovima.

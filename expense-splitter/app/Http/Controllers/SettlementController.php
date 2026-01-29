@@ -28,27 +28,27 @@ class SettlementController extends Controller
 
     public function store(Request $request, Group $group)
     {
-        if (!$group->users->contains(auth()->id()) && $group->owner_id != auth()->id()) {
-            abort(403);
-        }
-
         $request->validate([
-            'from_user_id' => 'required',
-            'to_user_id' => 'required',
-            'amount' => 'required|numeric',
-            'date' => 'required'
+            'to_user_id' => 'required|exists:users,id',
+            'amount' => 'required|numeric|min:0.01',
+            'date' => 'nullable|date'
         ]);
+
+        if ($request->to_user_id == auth()->id()) {
+            return back()->withErrors('Ne možete uplatiti samome sebi.');
+        }
 
         Settlement::create([
             'group_id' => $group->id,
-            'from_user_id' => $request->from_user_id,
+            'from_user_id' => auth()->id(),
             'to_user_id' => $request->to_user_id,
             'amount' => $request->amount,
-            'date' => $request->date
+            'date' => $request->date ?? now()->toDateString()
         ]);
 
-        return redirect()->back();
+        return back()->with('success', 'Uplata je spremljena.');
     }
+
 
     public function show(string $id)
     {

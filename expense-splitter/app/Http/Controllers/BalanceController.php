@@ -3,65 +3,113 @@
 namespace App\Http\Controllers;
 
 use App\Models\Group;
-
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Http\Request;
 
 class BalanceController extends Controller
 {
     public function show(Group $group)
     {
-        if (!$group->users->contains(Auth::id()) && $group->owner_id != Auth::id()) {
+        // ✔ sigurnost: samo članovi ili vlasnik
+        if (
+            !$group->users->contains(Auth::id()) &&
+            $group->owner_id !== Auth::id()
+        ) {
             abort(403);
         }
 
-        $expenses = $group->expenses;
         $users = $group->users;
+        $expenses = $group->expenses;
+        $settlementsDb = $group->settlements;
 
         $total = $expenses->sum('amount');
         $count = $users->count();
 
-        if ($count == 0) {
-            return view('balances.show', compact('group', 'total'));
+        if ($count === 0) {
+            return view('groups.balances', compact('group', 'total'));
         }
 
         $average = $total / $count;
 
+        /*
+        |--------------------------------------------------------------------------
+        | BALANCES
+        |--------------------------------------------------------------------------
+        | + iznos  => korisnik treba DOBITI
+        | - iznos  => korisnik DUGUJE
+        */
         $balances = [];
 
+        // inicijalno 0
         foreach ($users as $user) {
-            $paid = $expenses->where('user_id', $user->id)->sum('amount');
-            $balances[$user->name] = round($paid - $average, 2);
+            $balances[$user->id] = 0;
         }
 
+        // 1️⃣ EXPENSES (dijeljenje troškova)
+        foreach ($expenses as $expense) {
+            $share = $expense->amount / $count;
+
+            // svi duguju svoj dio
+            foreach ($users as $user) {
+                $balances[$user->id] -= $share;
+            }
+
+            // onaj tko je platio dobije puni iznos
+            $balances[$expense->user_id] += $expense->amount;
+        }
+
+        // 2️⃣ SETTLEMENTS (uplate)
+        foreach ($settlementsDb as $s) {
+            // platio → manje duguje / više treba dobiti
+            $balances[$s->from_user_id] += $s->amount;
+
+            // primio → manje treba dobiti
+            $balances[$s->to_user_id] -= $s->amount;
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | PREPORUČENE UPLATE
+        |--------------------------------------------------------------------------
+        */
         $debtors = [];
         $creditors = [];
 
-        foreach ($balances as $name => $balance) {
+        foreach ($balances as $userId => $balance) {
             if ($balance < 0) {
-                $debtors[$name] = abs($balance);
+                $debtors[$userId] = abs($balance);
             } elseif ($balance > 0) {
-                $creditors[$name] = $balance;
+                $creditors[$userId] = $balance;
             }
         }
 
         $settlements = [];
 
-        foreach ($debtors as $debtor => $debtAmount) {
-            foreach ($creditors as $creditor => $credAmount) {
+        foreach ($debtors as $debtorId => $debtAmount) {
+            foreach ($creditors as $creditorId => $credAmount) {
                 if ($debtAmount <= 0) break;
 
                 $pay = min($debtAmount, $credAmount);
 
                 if ($pay > 0) {
-                    $settlements[] = "$debtor duguje $creditor $pay €";
+                    $settlements[] =
+                        $users->find($debtorId)->name .
+                        ' duguje ' .
+                        $users->find($creditorId)->name .
+                        ' ' . number_format($pay, 2) . ' €';
+
                     $debtAmount -= $pay;
-                    $creditors[$creditor] -= $pay;
+                    $creditors[$creditorId] -= $pay;
                 }
             }
         }
 
         return view('balances.show', compact(
-            'group', 'total', 'average', 'balances', 'settlements'));
+            'group',
+            'total',
+            'average',
+            'balances',
+            'settlements',
+            'users'
+        ));
     }
 }

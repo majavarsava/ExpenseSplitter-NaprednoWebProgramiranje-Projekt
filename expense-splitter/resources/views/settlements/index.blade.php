@@ -16,17 +16,14 @@
               class="grid grid-cols-1 md:grid-cols-4 gap-4">
             @csrf
 
-            <select name="from_user_id" class="border rounded p-2">
-                @foreach($users as $user)
-                    <option value="{{ $user->id }}">{{ $user->name }} (plaća)</option>
-                @endforeach
+            <select name="to_user_id" class="border rounded p-2">
+            @foreach($users as $user)
+                @if($user->id !== auth()->id())
+                    <option value="{{ $user->id }}">{{ $user->name }} (prima)</option>
+                @endif
+            @endforeach
             </select>
 
-            <select name="to_user_id" class="border rounded p-2">
-                @foreach($users as $user)
-                    <option value="{{ $user->id }}">{{ $user->name }} (prima)</option>
-                @endforeach
-            </select>
 
             <input type="number" step="0.01" name="amount" placeholder="Iznos"
                    class="border rounded p-2">

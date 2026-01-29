@@ -9,6 +9,9 @@ use App\Http\Controllers\SettlementController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
+    if(Auth::check()){
+        return redirect()->route('dashboard');
+    }
     return view('welcome');
 });
 
@@ -35,6 +38,7 @@ Route::middleware('auth')->group(function () {
         ->name('groups.settlements.store');
     Route::delete('/groups/{group}/settlements/{settlement}', [SettlementController::class, 'destroy'])
         ->name('groups.settlements.destroy');
+    
 });
 
 require __DIR__.'/auth.php';
