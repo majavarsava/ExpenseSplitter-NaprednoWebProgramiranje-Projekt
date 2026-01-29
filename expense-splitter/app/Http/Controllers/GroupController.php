@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Group;
+use App\Models\User;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -16,26 +18,40 @@ class GroupController extends Controller
 
     public function index()
     {
-        $groups = Group::where('owner_id', Auth::id())->get();
+        $userId = Auth::id();
+
+        $groups = Group::where('owner_id', $userId)
+            ->orWhereHas('users', function ($query) use ($userId) {
+                $query->where('user_id', $userId);
+            })
+            ->get();
         return view('groups.index', compact('groups'));
     }
 
     public function create()
     {
-        return view('groups.create');
+        $users = User::where('id', '!=', auth()->id())->get();
+        return view('groups.create', compact('users'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required'
+            'name' => 'required|string|max:255',
+            'users' => 'array'
         ]);
 
-        Group::create([
+        $group = Group::create([
             'name' => $request->name,
             'description' => $request->description,
-            'owner_id' => Auth::id()
+            'owner_id' => auth()->id()
         ]);
+
+        $group->users()->attach(auth()->id());
+
+        if ($request->has('users')) {
+            $group->users()->attach($request->users);
+        }
 
         return redirect()->route('groups.index');
     }

@@ -62,6 +62,11 @@
                                 <p class="text-sm text-gray-500">{{ $user->email }}</p>
                             </div>
 
+                            @if($user->id == $group->owner_id)
+                                <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">
+                                    Vlasnik grupe
+                                </span>
+                            @else
                             <form method="POST"
                                   action="{{ route('groups.members.destroy', [$group->id, $user->id]) }}"
                                   onsubmit="return confirm('Sigurno želiš ukloniti ovog člana?')">
@@ -73,6 +78,7 @@
                                     Ukloni
                                 </button>
                             </form>
+                            @endif
 
                         </li>
                     @endforeach

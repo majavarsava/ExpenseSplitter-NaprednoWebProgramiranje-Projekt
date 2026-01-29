@@ -7,46 +7,80 @@
 @endsection
 
 @section('content')
-<br><br>
 <div class="py-10">
-    <div class="max-w-xl mx-auto sm:px-6 lg:px-8">
+    <div class="max-w-5xl mx-auto sm:px-6 lg:px-8 space-y-8">
 
-        <div class="bg-white rounded-xl shadow p-8">
+        <!-- Back link -->
+        <div>
+            <a href="{{ route('groups.index') }}"
+               class="text-blue-600 hover:underline flex items-center">
+                ← Natrag na grupe
+            </a>
+        </div>
 
-            <h2 class="text-2xl font-bold mb-6 text-gray-800">Kreiraj novu grupu</h2>
+        <!-- Create group card -->
+        <div class="bg-white shadow rounded-lg p-6">
+            <h3 class="text-lg font-semibold mb-6 text-gray-800">
+                Kreiraj novu grupu
+            </h3>
 
-            <form method="POST" action="{{ route('groups.store') }}">
+            <form method="POST" action="{{ route('groups.store') }}" class="space-y-6">
                 @csrf
 
-                <div class="mb-4">
+                <!-- Group name -->
+                <div>
                     <label class="block text-gray-700 mb-1">Naziv grupe</label>
                     <input type="text" name="name"
-                           class="w-full border rounded px-3 py-2 focus:outline-none focus:ring focus:border-blue-400"
-                           placeholder="Unesi naziv grupe">
+                           class="w-full border rounded px-4 py-2 focus:outline-none focus:ring focus:border-blue-400"
+                           placeholder="Unesi naziv grupe" required>
                 </div>
 
-                <div class="mb-6">
+                <!-- Description -->
+                <div>
                     <label class="block text-gray-700 mb-1">Opis</label>
                     <textarea name="description"
-                              class="w-full border rounded px-3 py-2 focus:outline-none focus:ring focus:border-blue-400"
+                              class="w-full border rounded px-4 py-2 focus:outline-none focus:ring focus:border-blue-400"
                               placeholder="Opis grupe"></textarea>
                 </div>
 
+                <!-- Members select -->
+                <div>
+                    <label class="block text-gray-700 mb-2">Dodaj članove u grupu</label>
+
+                    <select name="users[]" multiple
+                            class="w-full border rounded px-4 py-2 h-48">
+
+                        @foreach($users as $user)
+                            @if($user->id !== auth()->id())
+                                <option value="{{ $user->id }}">
+                                    {{ $user->name }} ({{ $user->email }})
+                                </option>
+                            @endif
+                        @endforeach
+
+                    </select>
+
+                    <p class="text-sm text-gray-500 mt-1">
+                        Drži CTRL (Windows) ili CMD (Mac) za odabir više članova.
+                    </p>
+                </div>
+
+                <!-- Buttons -->
                 <div class="flex gap-4">
                     <button type="submit"
-                            class="bg-green-500 text-black px-6 py-2 rounded hover:bg-green-600">
-                        Spremi
+                            class="bg-green-500 text-black px-6 py-2 rounded hover:bg-green-600 transition">
+                        Spremi grupu
                     </button>
 
                     <a href="{{ route('groups.index') }}"
-                       class="bg-gray-300 text-gray-800 px-6 py-2 rounded hover:bg-gray-400">
+                       class="bg-gray-300 text-gray-800 px-6 py-2 rounded hover:bg-gray-400 transition">
                         Nazad
                     </a>
                 </div>
 
             </form>
-
         </div>
+
     </div>
 </div>
 @endsection

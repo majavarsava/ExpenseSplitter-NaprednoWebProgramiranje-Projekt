@@ -34,7 +34,7 @@
             <input type="date" name="date" class="border rounded p-2">
 
             <button type="submit"
-                class="md:col-span-4 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
+                class="md:col-span-4 bg-green-500 text-black px-4 py-2 rounded hover:bg-green-600">
                 Spremi uplatu
             </button>
         </form>
@@ -66,7 +66,7 @@
                             @csrf
                             @method('DELETE')
                             <button type="submit"
-                                class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">
+                                class="bg-red-500 text-black px-3 py-1 rounded hover:bg-red-600">
                                 Obriši
                             </button>
                         </form>

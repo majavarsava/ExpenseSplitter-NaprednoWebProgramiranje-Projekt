@@ -9,14 +9,9 @@
 @section('content')
 <div class="py-10">
     <div class="max-w-6xl mx-auto sm:px-6 lg:px-8">
-
+        <br>
         <div class="flex justify-between items-center mb-6">
             <h2 class="text-2xl font-bold text-gray-800">Moje grupe</h2>
-
-            <a href="{{ route('groups.create') }}"
-               class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition">
-                + Nova grupa
-            </a>
         </div>
 
         @if($groups->count() == 0)
@@ -110,6 +105,11 @@
             </div>
             @endforeach
 
+            <br><br>
+            <a href="{{ route('groups.create') }}"
+               class="bg-green-500 text-black px-4 py-2 rounded-lg hover:bg-green-600 transition">
+                + Nova grupa
+            </a>
         </div>
 
     </div>
