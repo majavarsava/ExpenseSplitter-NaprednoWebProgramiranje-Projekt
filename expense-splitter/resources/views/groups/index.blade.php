@@ -67,10 +67,12 @@
                 <!-- Akcije -->
                 <div class="grid grid-cols-2 gap-3 mb-3">
 
+                    @can('manageMembers', $group)
                     <a href="{{ route('groups.members', $group->id) }}"
                        class="text-center bg-purple-100 text-purple-800 py-2 rounded hover:bg-purple-200">
                         Članovi
                     </a>
+                    @endcan
 
                     <a href="{{ route('groups.expenses.index', $group->id) }}"
                        class="text-center bg-blue-100 text-blue-800 py-2 rounded hover:bg-blue-200">
@@ -82,13 +84,16 @@
                         Dugovi
                     </a>
 
+                    @can('update', $group)
                     <a href="{{ route('groups.edit', $group->id) }}"
                        class="text-center bg-yellow-100 text-yellow-800 py-2 rounded hover:bg-yellow-200">
                         Uredi
                     </a>
+                    @endcan
 
                 </div>
 
+                @can('delete', $group)
                 <!-- Delete -->
                 <form action="{{ route('groups.destroy', $group->id) }}" method="POST"
                       onsubmit="return confirm('Sigurno želiš obrisati grupu?')">
@@ -100,6 +105,7 @@
                         Obriši grupu
                     </button>
                 </form>
+                @endcan
 
             </div>
             @endforeach

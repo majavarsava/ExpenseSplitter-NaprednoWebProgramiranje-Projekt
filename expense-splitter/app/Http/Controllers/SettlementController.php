@@ -13,9 +13,7 @@ class SettlementController extends Controller
 {
     public function index(Group $group)
     {
-        if (!$group->users->contains(auth()->id()) && $group->owner_id != auth()->id()) {
-            abort(403);
-        }
+        $this->authorize('view', $group);
 
         $settlements = $group->settlements;
         $users = $group->users;

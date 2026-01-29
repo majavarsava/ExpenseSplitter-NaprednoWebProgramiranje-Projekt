@@ -47,9 +47,7 @@ class GroupController extends Controller
 
     public function edit(Group $group)
     {
-        if ($group->owner_id !== Auth::id()) {
-            abort(403);
-        }
+        $this->authorize('update', $group);
         return view('groups.edit', compact('group'));
     }
 
@@ -65,9 +63,7 @@ class GroupController extends Controller
 
     public function destroy(Group $group)
     {
-        if ($group->owner_id !== Auth::id()) {
-            abort(403);
-        }
+        $this->authorize('delete', $group);
         $group->delete();
         return redirect()->route('groups.index');
     }

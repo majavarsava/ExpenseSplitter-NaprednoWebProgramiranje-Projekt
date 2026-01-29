@@ -12,6 +12,7 @@ class ExpenseController extends Controller
 {
     public function index(Group $group)
     {
+        $this->authorize('view', $group);
         $expenses = $group->expenses;
         return view('expenses.index', compact('group', 'expenses'));
     }

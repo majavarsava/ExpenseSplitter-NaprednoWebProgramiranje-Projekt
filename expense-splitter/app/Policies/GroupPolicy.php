@@ -21,7 +21,12 @@ class GroupPolicy
      */
     public function view(User $user, Group $group): bool
     {
-        return false;
+        return $group->users->contains($user) || $group->owner_id === $user->id;
+    }
+
+    public function manageMembers(User $user, Group $group)
+    {
+        return $user->id === $group->owner_id;
     }
 
     /**
@@ -37,7 +42,7 @@ class GroupPolicy
      */
     public function update(User $user, Group $group): bool
     {
-        return false;
+        return $user->id === $group->owner_id;
     }
 
     /**
@@ -45,7 +50,7 @@ class GroupPolicy
      */
     public function delete(User $user, Group $group): bool
     {
-        return false;
+        return $user->id === $group->owner_id;
     }
 
     /**
@@ -63,4 +68,6 @@ class GroupPolicy
     {
         return false;
     }
+
+
 }
