@@ -5,6 +5,7 @@ use App\Http\Controllers\GroupController;
 use App\Http\Controllers\MemberController;
 use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\BalanceController;
+use App\Http\Controllers\SettlementController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -27,6 +28,13 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('groups.expenses', ExpenseController::class);
     Route::get('/groups/{group}/balances', [BalanceController::class, 'show'])->name('groups.balances');
+
+    Route::get('/groups/{group}/settlements', [SettlementController::class, 'index'])
+        ->name('groups.settlements.index');
+    Route::post('/groups/{group}/settlements', [SettlementController::class, 'store'])
+        ->name('groups.settlements.store');
+    Route::delete('/groups/{group}/settlements/{settlement}', [SettlementController::class, 'destroy'])
+        ->name('groups.settlements.destroy');
 });
 
 require __DIR__.'/auth.php';

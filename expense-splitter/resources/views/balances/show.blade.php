@@ -39,5 +39,8 @@
 @endforeach
 </ul>
 
+<br>
+<a href="{{ route('groups.settlements.index', $group->id) }}">Evidencija uplata</a>
+<br>
 
 @endsection
