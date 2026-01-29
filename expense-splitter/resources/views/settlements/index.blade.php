@@ -1,59 +1,81 @@
 @extends('layouts.app')
 
 @section('content')
-<h2>Uplate – grupa: {{ $group->name }}</h2>
+<div class="max-w-5xl mx-auto p-6 space-y-6">
 
-<h3>Dodaj novu uplatu</h3>
+    <a href="{{ route('groups.balances', $group->id) }}"
+       class="text-blue-500 hover:underline">← Natrag na dugove</a>
 
-<form method="POST" action="{{ route('groups.settlements.store', $group->id) }}">
-@csrf
+    <div class="bg-white shadow rounded-lg p-6">
+        <h2 class="text-2xl font-bold mb-4">Uplate – {{ $group->name }}</h2>
 
-<select name="from_user_id">
-@foreach($users as $user)
-    <option value="{{ $user->id }}">{{ $user->name }} (plaća)</option>
-@endforeach
-</select>
+        <!-- Add payment -->
+        <h3 class="text-lg font-semibold mb-3">Dodaj novu uplatu</h3>
 
-<select name="to_user_id">
-@foreach($users as $user)
-    <option value="{{ $user->id }}">{{ $user->name }} (prima)</option>
-@endforeach
-</select>
-
-<input type="number" step="0.01" name="amount" placeholder="Iznos">
-<input type="date" name="date">
-
-<button type="submit">Spremi uplatu</button>
-</form>
-
-<hr>
-
-<h3>Povijest uplata</h3>
-
-<table border="1">
-<tr>
-    <th>Od</th>
-    <th>Prema</th>
-    <th>Iznos</th>
-    <th>Datum</th>
-    <th>Akcija</th>
-</tr>
-
-@foreach($settlements as $s)
-<tr>
-    <td>{{ $s->fromUser->name }}</td>
-    <td>{{ $s->toUser->name }}</td>
-    <td>{{ $s->amount }} €</td>
-    <td>{{ $s->date }}</td>
-    <td>
-        <form method="POST" action="{{ route('groups.settlements.destroy', [$group->id, $s->id]) }}">
+        <form method="POST" action="{{ route('groups.settlements.store', $group->id) }}"
+              class="grid grid-cols-1 md:grid-cols-4 gap-4">
             @csrf
-            @method('DELETE')
-            <button type="submit">Obriši</button>
-        </form>
-    </td>
-</tr>
-@endforeach
-</table>
 
+            <select name="from_user_id" class="border rounded p-2">
+                @foreach($users as $user)
+                    <option value="{{ $user->id }}">{{ $user->name }} (plaća)</option>
+                @endforeach
+            </select>
+
+            <select name="to_user_id" class="border rounded p-2">
+                @foreach($users as $user)
+                    <option value="{{ $user->id }}">{{ $user->name }} (prima)</option>
+                @endforeach
+            </select>
+
+            <input type="number" step="0.01" name="amount" placeholder="Iznos"
+                   class="border rounded p-2">
+
+            <input type="date" name="date" class="border rounded p-2">
+
+            <button type="submit"
+                class="md:col-span-4 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
+                Spremi uplatu
+            </button>
+        </form>
+    </div>
+
+    <!-- History -->
+    <div class="bg-white shadow rounded-lg p-6">
+        <h3 class="text-xl font-semibold mb-4">Povijest uplata</h3>
+
+        <table class="w-full border-collapse">
+            <thead>
+                <tr class="bg-gray-100 text-left">
+                    <th class="p-2">Od</th>
+                    <th class="p-2">Prema</th>
+                    <th class="p-2">Iznos</th>
+                    <th class="p-2">Datum</th>
+                    <th class="p-2">Akcija</th>
+                </tr>
+            </thead>
+            <tbody>
+            @foreach($settlements as $s)
+                <tr class="border-t">
+                    <td class="p-2">{{ $s->fromUser->name }}</td>
+                    <td class="p-2">{{ $s->toUser->name }}</td>
+                    <td class="p-2">{{ $s->amount }} €</td>
+                    <td class="p-2">{{ $s->date }}</td>
+                    <td class="p-2">
+                        <form method="POST" action="{{ route('groups.settlements.destroy', [$group->id, $s->id]) }}">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit"
+                                class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">
+                                Obriši
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            @endforeach
+            </tbody>
+        </table>
+    </div>
+
+</div>
 @endsection
