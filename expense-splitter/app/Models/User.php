@@ -58,4 +58,13 @@ class User extends Authenticatable
     {
         return $this->hasMany(Expense::class);
     }
+    public function settlementsFrom()
+    {
+        return $this->hasMany(Settlement::class, 'from_user_id');
+    }
+
+    public function settlementsTo()
+    {
+        return $this->hasMany(Settlement::class, 'to_user_id');
+    }
 }

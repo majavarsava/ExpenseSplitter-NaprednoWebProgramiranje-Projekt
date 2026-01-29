@@ -11,7 +11,7 @@
     <div class="bg-white shadow rounded-lg p-6">
         <h2 class="text-2xl font-bold mb-2">Stanje dugova – {{ $group->name }}</h2>
         <p class="text-gray-600">Ukupni trošak: <strong>{{ $total }} €</strong></p>
-        <p class="text-gray-600">Prosjek po osobi: <strong>{{ number_format($average, 2) }} €</strong></p>
+        
     </div>
 
     <!-- Balances table -->

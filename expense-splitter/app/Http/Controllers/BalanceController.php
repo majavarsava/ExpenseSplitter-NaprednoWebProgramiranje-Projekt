@@ -21,30 +21,33 @@ class BalanceController extends Controller
         $expenses = $group->expenses;
         $settlementsDb = $group->settlements;
 
-        $total = $expenses->sum('amount');
         $count = $users->count();
+        $total = $expenses->sum('amount');
 
         if ($count === 0) {
-            return view('groups.balances', compact('group', 'total'));
+            return view('balances.show', compact('group', 'total'));
         }
-
-        $average = $total / $count;
 
         /*
         |--------------------------------------------------------------------------
         | BALANCES
         |--------------------------------------------------------------------------
-        | + iznos  => korisnik treba DOBITI
-        | - iznos  => korisnik DUGUJE
+        | + iznos => korisnik treba DOBITI
+        | - iznos => korisnik DUGUJE
         */
         $balances = [];
 
-        // inicijalno 0
+        // inicijalno svi 0
         foreach ($users as $user) {
             $balances[$user->id] = 0;
         }
 
-        // 1️⃣ EXPENSES (dijeljenje troškova)
+        /*
+        |--------------------------------------------------------------------------
+        | 1️⃣ EXPENSES
+        |--------------------------------------------------------------------------
+        | svaki trošak se dijeli na sve članove
+        */
         foreach ($expenses as $expense) {
             $share = $expense->amount / $count;
 
@@ -53,11 +56,16 @@ class BalanceController extends Controller
                 $balances[$user->id] -= $share;
             }
 
-            // onaj tko je platio dobije puni iznos
+            // onaj tko je platio dobije cijeli iznos
             $balances[$expense->user_id] += $expense->amount;
         }
 
-        // 2️⃣ SETTLEMENTS (uplate)
+        /*
+        |--------------------------------------------------------------------------
+        | 2️⃣ SETTLEMENTS
+        |--------------------------------------------------------------------------
+        | uplate zatvaraju dugove
+        */
         foreach ($settlementsDb as $s) {
             // platio → manje duguje / više treba dobiti
             $balances[$s->from_user_id] += $s->amount;
@@ -106,7 +114,6 @@ class BalanceController extends Controller
         return view('balances.show', compact(
             'group',
             'total',
-            'average',
             'balances',
             'settlements',
             'users'
