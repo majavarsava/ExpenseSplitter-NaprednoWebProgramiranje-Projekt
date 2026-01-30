@@ -46,10 +46,74 @@
     </div>
 
     <!-- History card -->
-    <div class="backdrop-blur-xl bg-white/60 border border-white/40 shadow-md rounded-2xl p-8">
+    <div id="history" class="backdrop-blur-xl bg-white/60 border border-white/40 shadow-md rounded-2xl p-8">
         <h3 class="text-2xl font-semibold text-indigo-700 mb-4">
             Povijest uplata
         </h3>
+
+        <form method="GET" action="{{ route('groups.settlements.index', $group->id) }}#history" class="bg-indigo-50 p-4 rounded-xl shadow mb-6">
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <!-- Sort -->
+                <div>
+                    <label class="text-sm font-semibold text-gray-700">Sortiraj po</label>
+                    <select name="sort"class="w-full rounded-lg border px-3 py-2">
+                        <option value="date_desc" {{ request('sort')=='date_desc' ? 'selected' : '' }}>Datum ↓</option>
+                        <option value="date_asc" {{ request('sort')=='date_asc' ? 'selected' : '' }}>Datum ↑</option>
+                        <option value="amount_desc" {{ request('sort')=='amount_desc' ? 'selected' : '' }}>Iznos ↓</option>
+                        <option value="amount_asc" {{ request('sort')=='amount_asc' ? 'selected' : '' }}>Iznos ↑</option>
+                        <option value="from" {{ request('sort')=='from' ? 'selected' : '' }}>Platitelj (A-Z)</option>
+                        <option value="to" {{ request('sort')=='to' ? 'selected' : '' }}>Primatelj (A-Z)</option>
+                    </select>
+                </div>
+
+                <div>
+
+                </div>
+                <!-- Date from -->
+                <div>
+                    <label class="text-sm font-semibold text-gray-700">Datum od</label>
+                    <input type="date" name="date_from" value="{{ request('date_from') }}"
+                        class="w-full rounded-lg border px-3 py-2">
+                </div>
+
+                <!-- Date to -->
+                <div>
+                    <label class="text-sm font-semibold text-gray-700">Datum do</label>
+                    <input type="date" name="date_to" value="{{ request('date_to') }}"
+                        class="w-full rounded-lg border px-3 py-2">
+                </div>
+
+                <!-- Amount from -->
+                <div>
+                    <label class="text-sm font-semibold text-gray-700">Iznos od</label>
+                    <input type="number" step="0.01" name="amount_from" value="{{ request('amount_from') }}" 
+                        class="w-full rounded-lg border px-3 py-2">
+                </div>
+
+                <!-- Amount to -->
+                <div>
+                    <label class="text-sm font-semibold text-gray-700">Iznos do</label>
+                    <input type="number" step="0.01" name="amount_to" value="{{ request('amount_to') }}"
+                        class="w-full rounded-lg border px-3 py-2">
+                </div>
+
+            </div>
+
+            <div class="flex gap-4 mt-4">
+                <button type="submit"
+                    class="px-6 py-2 rounded-xl bg-gray-300 text-gray-800 hover:bg-gray-400 transition">
+                    Filtriraj
+                </button>
+
+                <a href="{{ route('groups.settlements.index', $group->id) }}"
+                class="px-6 py-2 rounded-xl bg-gray-200 text-gray-800 hover:bg-gray-400 transition">
+                    Reset
+                </a>
+            </div>
+
+        </form>
+
 
         <table class="w-full border-collapse rounded-xl overflow-hidden">
             <thead>
@@ -57,7 +121,11 @@
                     <th class="p-3 text-left">Od</th>
                     <th class="p-3 text-left">Prema</th>
                     <th class="p-3 text-left">Iznos</th>
-                    <th class="p-3 text-left">Datum</th>
+                    <th class="p-3 text-left">
+                        <!-- <a href="?sort=date&direction={{ request('direction')=='asc'?'desc':'asc' }}"> -->
+                            Datum
+                        <!-- </a> -->
+                    </th>
                     <th class="p-3 text-left">Akcija</th>
                 </tr>
             </thead>
@@ -68,10 +136,10 @@
                     <td class="p-3 text-gray-700">{{ $s->fromUser->name }}</td>
                     <td class="p-3 text-gray-700">{{ $s->toUser->name }}</td>
                     <td class="p-3 text-gray-700">{{ $s->amount }} €</td>
-                    <td class="p-3 text-gray-700">{{ $s->date }}</td>
+                    <td class="p-3 text-gray-700">{{ \Carbon\Carbon::parse($s->date)->format('d.m.Y') }}</td>
                     <td class="p-3">
                         <form method="POST"
-                              action="{{ route('groups.settlements.destroy', [$group->id, $s->id]) }}">
+                              action="{{ route('groups.settlements.destroy', [$group->id, $s->id]) }}?{{ request()->getQueryString() }}">
                             @csrf
                             @method('DELETE')
 

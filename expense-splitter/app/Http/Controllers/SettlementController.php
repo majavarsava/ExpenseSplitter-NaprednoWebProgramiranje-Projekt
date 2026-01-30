@@ -11,11 +11,63 @@ use Illuminate\Http\Request;
 
 class SettlementController extends Controller
 {
-    public function index(Group $group)
+    public function index(Request $request, Group $group)
     {
         $this->authorize('view', $group);
 
-        $settlements = $group->settlements;
+        $query = $group->settlements()
+            ->with(['fromUser', 'toUser']);
+
+        # filter - datum od-do
+        if ($request->filled('date_from')) {
+            $query->where('date', '>=', $request->date_from);
+        }
+
+        if ($request->filled('date_to')) {
+            $query->where('date', '<=', $request->date_to);
+        }
+
+        # filter - iznos od-do
+        if ($request->filled('amount_from')) {
+            $query->where('amount', '>=', $request->amount_from);
+        }
+
+        if ($request->filled('amount_to')) {
+            $query->where('amount', '<=', $request->amount_to);
+        }
+
+        switch ($request->sort) {
+            case 'date_asc':
+                $query->orderBy('date', 'asc');
+                break;
+
+            case 'amount_asc':
+                $query->orderBy('amount', 'asc');
+                break;
+
+            case 'amount_desc':
+                $query->orderBy('amount', 'desc');
+                break;
+
+            case 'from':
+                $query->orderBy(
+                    User::select('name')
+                        ->whereColumn('users.id', 'settlements.from_user_id')
+                );
+                break;
+
+            case 'to':
+                $query->orderBy(
+                    User::select('name')
+                        ->whereColumn('users.id', 'settlements.to_user_id')
+                );
+                break;
+
+            default:
+                $query->orderBy('date', 'desc');
+        }
+
+        $settlements = $query->get();
         $users = $group->users;
 
         return view('settlements.index', compact('group', 'settlements', 'users'));
@@ -73,6 +125,6 @@ class SettlementController extends Controller
 
         $settlement->delete();
 
-        return redirect()->back();
+        return redirect()->back()->withFragment('history');
     }
 }
